@@ -11,54 +11,72 @@
         body {
             margin: 0;
             font-family: "Noto Serif SC", serif;
-            background: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
             background-size: cover;
             color: #fff;
+            overflow-x: hidden;
         }
 
-        .overlay {
-            background: rgba(0,0,0,0.55);
-            min-height: 100vh;
-            padding-bottom: 50px;
-        }
-
-        header {
+        /* 顶部标题区（初始大，滚动后缩小） */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
-            padding: 60px 20px;
+            transition: all 0.6s ease;
         }
 
-        header h1 {
+        .hero h1 {
             font-family: "Playfair Display", serif;
-            font-size: 48px;
+            font-size: 60px;
             margin: 0;
             letter-spacing: 3px;
+            transition: font-size 0.6s ease;
         }
 
-        header p {
-            font-size: 20px;
+        .hero p {
+            font-size: 22px;
             margin-top: 10px;
             opacity: 0.9;
+            transition: opacity 0.6s ease;
         }
 
-        /* 雪花效果 */
-        .snowflake {
+        /* 滚动后缩小成导航栏 */
+        .hero.shrink {
+            height: 80px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(6px);
             position: fixed;
-            top: -10px;
-            color: white;
-            font-size: 18px;
-            animation: fall 10s linear infinite;
-            opacity: 0.8;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+            padding: 10px;
         }
 
-        @keyframes fall {
-            0% { transform: translateY(0) rotate(0deg); }
-            100% { transform: translateY(100vh) rotate(360deg); }
+        .hero.shrink h1 {
+            font-size: 26px;
         }
 
-        .container {
+        .hero.shrink p {
+            opacity: 0;
+        }
+
+        /* 内容区 */
+        .content {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 40px 20px;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s ease;
+        }
+
+        .content.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .card {
@@ -88,41 +106,83 @@
         a:hover {
             text-decoration: underline;
         }
+
+        /* 雪花效果（更自然） */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            color: white;
+            font-size: 12px;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(0) translateX(0) rotate(0deg); }
+            100% { transform: translateY(100vh) translateX(40px) rotate(360deg); }
+        }
     </style>
 </head>
 
 <body>
-<div class="overlay">
 
-    <!-- 雪花 -->
-    <div class="snowflake">❄</div>
-    <div class="snowflake" style="left: 20%;">❄</div>
-    <div class="snowflake" style="left: 40%;">❄</div>
-    <div class="snowflake" style="left: 60%;">❄</div>
-    <div class="snowflake" style="left: 80%;">❄</div>
+<!-- 雪花生成 -->
+<script>
+    function createSnowflake() {
+        const snowflake = document.createElement('div');
+        snowflake.classList.add('snowflake');
+        snowflake.textContent = '❄';
 
-    <header>
-        <h1>书雪书阁 · Elowen’s Book Pavilion</h1>
-        <p>欢迎来到我的小说世界</p>
-    </header>
+        // 随机位置、大小、速度
+        snowflake.style.left = Math.random() * window.innerWidth + 'px';
+        snowflake.style.fontSize = (10 + Math.random() * 20) + 'px';
+        snowflake.style.animationDuration = (4 + Math.random() * 6) + 's';
 
-    <div class="container">
+        document.body.appendChild(snowflake);
 
-        <!-- 小说入口 -->
-        <div class="card">
-            <h2>《梦雪》</h2>
-            <p>一段关于雪、梦境与命运的故事。</p>
-            <a href="novels/novel1/index.html">开始阅读 →</a>
-        </div>
+        // 雪花落下后删除
+        setTimeout(() => snowflake.remove(), 10000);
+    }
 
-        <!-- 作者介绍 -->
-        <div class="card">
-            <h2>作者介绍</h2>
-            <p>这里可以写你的作者简介，例如你的创作理念、你的世界观、你为什么写这本小说。</p>
-            <a href="author.html">查看完整作者页面 →</a>
-        </div>
+    setInterval(createSnowflake, 150); // 雪花数量更多
+</script>
 
+<!-- 顶部标题区 -->
+<div class="hero" id="hero">
+    <h1>书雪书阁 · Elowen’s Book Pavilion</h1>
+    <p>欢迎来到我的小说世界</p>
+</div>
+
+<!-- 内容区 -->
+<div class="content" id="content">
+    <div class="card">
+        <h2>《梦雪》</h2>
+        <p>一段关于雪、梦境与命运的故事。</p>
+        <a href="novels/novel1/index.html">开始阅读 →</a>
+    </div>
+
+    <div class="card">
+        <h2>作者介绍</h2>
+        <p>这里可以写你的作者简介，例如你的创作理念、你的世界观、你为什么写这本小说。</p>
+        <a href="author.html">查看完整作者页面 →</a>
     </div>
 </div>
+
+<!-- 滚动动画 -->
+<script>
+    window.addEventListener('scroll', () => {
+        const hero = document.getElementById('hero');
+        const content = document.getElementById('content');
+
+        if (window.scrollY > 100) {
+            hero.classList.add('shrink');
+            content.classList.add('show');
+        } else {
+            hero.classList.remove('shrink');
+            content.classList.remove('show');
+        }
+    });
+</script>
+
 </body>
 </html>

@@ -1,13 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>作者随笔</title>
-</head>
-<body>
-    <h1>作者随笔</h1>
-    <p>这里写你的想法、创作过程、灵感来源。</p>
+    <title>作者随笔 | 梦雪</title>
 
-    <p><a href="index.html">返回小说首页</a></p>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Noto Serif SC", serif;
+            background: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+        }
+
+        .overlay {
+            background: rgba(0,0,0,0.55);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.15);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(8px);
+        }
+
+        h1 {
+            font-family: "Playfair Display", serif;
+            font-size: 40px;
+            margin-top: 0;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        p {
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        a {
+            color: #cce0ff;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* 返回按钮 */
+        .back {
+            margin-top: 30px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+<div class="overlay">
+    <div class="container">
+
+        <div class="card">
+            <h1>作者随笔</h1>
+
+            <p>这里是你记录创作过程、灵感来源、人物塑造想法的地方。</p>
+            <p>你可以写下你在创作《梦雪》时的心情、遇到的困难、突然闪现的灵感，或者你想对读者说的话。</p>
+            <p>这个页面会成为你小说世界的幕后花絮，让读者更了解你的创作旅程。</p>
+
+            <div class="back">
+                <a href="index.html">← 返回小说首页</a>
+            </div>
+        </div>
+
+    </div>
+</div>
 </body>
 </html>

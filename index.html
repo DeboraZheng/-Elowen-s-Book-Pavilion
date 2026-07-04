@@ -2,19 +2,32 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>书雪书阁 | Elowen’s Book Pavilion</title>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
 
     <style>
+        :root {
+            --glass-bg: rgba(255,255,255,0.15);
+            --glass-blur: 8px;
+            --text-color: #fff;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
         body {
             margin: 0;
             font-family: "Noto Serif SC", serif;
             background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
             background-size: cover;
-            color: #fff;
+            color: var(--text-color);
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         /* 顶部标题区（初始大，滚动后缩小） */
@@ -26,6 +39,7 @@
             align-items: center;
             text-align: center;
             transition: all 0.6s ease;
+            padding: 20px;
         }
 
         .hero h1 {
@@ -33,13 +47,14 @@
             font-size: 60px;
             margin: 0;
             letter-spacing: 3px;
+            text-shadow: 0 6px 18px rgba(0,0,0,0.45);
             transition: font-size 0.6s ease;
         }
 
         .hero p {
             font-size: 22px;
             margin-top: 10px;
-            opacity: 0.9;
+            opacity: 0.95;
             transition: opacity 0.6s ease;
         }
 
@@ -53,7 +68,7 @@
             left: 0;
             right: 0;
             z-index: 10;
-            padding: 10px;
+            padding: 10px 20px;
         }
 
         .hero.shrink h1 {
@@ -62,6 +77,8 @@
 
         .hero.shrink p {
             opacity: 0;
+            height: 0;
+            overflow: hidden;
         }
 
         /* 内容区 */
@@ -80,16 +97,17 @@
         }
 
         .card {
-            background: rgba(255,255,255,0.15);
+            background: var(--glass-bg);
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 25px;
-            backdrop-filter: blur(8px);
-            transition: transform 0.3s;
+            backdrop-filter: blur(var(--glass-blur));
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
         .card:hover {
             transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.35);
         }
 
         .card h2 {
@@ -107,82 +125,166 @@
             text-decoration: underline;
         }
 
-        /* 雪花效果（更自然） */
+        /* 雪花效果（更自然且性能友好） */
         .snowflake {
             position: fixed;
             top: -10px;
             color: white;
-            font-size: 12px;
-            opacity: 0.8;
-            animation: fall linear infinite;
+            opacity: 0.85;
+            pointer-events: none;
+            will-change: transform, opacity;
+            animation-name: fall;
+            animation-timing-function: linear;
+            animation-iteration-count: 1;
         }
 
         @keyframes fall {
-            0% { transform: translateY(0) translateX(0) rotate(0deg); }
-            100% { transform: translateY(100vh) translateX(40px) rotate(360deg); }
+            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0.95; }
+            70% { opacity: 0.95; }
+            100% { transform: translateY(110vh) translateX(var(--drift, 40px)) rotate(360deg); opacity: 0.9; }
+        }
+
+        /* 小屏幕优化 */
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 36px; letter-spacing: 1px; }
+            .hero p { font-size: 16px; }
+            .card h2 { font-size: 22px; }
+        }
+
+        /* 无障碍跳过链接 */
+        .skip-link {
+            position: absolute;
+            left: -999px;
+            top: auto;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+        .skip-link:focus {
+            left: 10px;
+            top: 10px;
+            width: auto;
+            height: auto;
+            background: #000;
+            color: #fff;
+            padding: 8px 12px;
+            z-index: 9999;
+            border-radius: 4px;
+            text-decoration: none;
         }
     </style>
 </head>
 
 <body>
+    <a class="skip-link" href="#content">跳过到内容</a>
 
-<!-- 雪花生成 -->
-<script>
-    function createSnowflake() {
-        const snowflake = document.createElement('div');
-        snowflake.classList.add('snowflake');
-        snowflake.textContent = '❄';
+    <!-- 顶部标题区 -->
+    <header class="hero" id="hero" role="banner" aria-label="网站顶部">
+        <h1>书雪书阁 · Elowen’s Book Pavilion</h1>
+        <p>欢迎来到我的小说世界</p>
+    </header>
 
-        // 随机位置、大小、速度
-        snowflake.style.left = Math.random() * window.innerWidth + 'px';
-        snowflake.style.fontSize = (10 + Math.random() * 20) + 'px';
-        snowflake.style.animationDuration = (4 + Math.random() * 6) + 's';
+    <!-- 内容区 -->
+    <main id="content" class="content" role="main" aria-labelledby="main-title">
+        <div class="card" aria-labelledby="novel-title">
+            <h2 id="novel-title">《梦雪》</h2>
+            <p>一段关于雪、梦境与命运的故事。</p>
+            <a href="novels/novel1/index.html" aria-label="开始阅读《梦雪》">开始阅读 →</a>
+        </div>
 
-        document.body.appendChild(snowflake);
+        <div class="card" aria-labelledby="author-title">
+            <h2 id="author-title">作者介绍</h2>
+            <p>这里可以写你的作者简介，例如你的创作理念、你的世界观、你为什么写这本小说。</p>
+            <a href="author.html" aria-label="查看作者页面">查看完整作者页面 →</a>
+        </div>
+    </main>
 
-        // 雪花落下后删除
-        setTimeout(() => snowflake.remove(), 10000);
-    }
+    <!-- 雪花生成脚本（放在文档末尾以提升首屏加载） -->
+    <script>
+        (function () {
+            const maxSnowflakes = 18;
+            const lifetime = 9000; // ms
+            let active = 0;
 
-    setInterval(createSnowflake, 150); // 雪花数量更多
-</script>
+            function createSnowflake() {
+                if (active >= maxSnowflakes) return;
+                active++;
 
-<!-- 顶部标题区 -->
-<div class="hero" id="hero">
-    <h1>书雪书阁 · Elowen’s Book Pavilion</h1>
-    <p>欢迎来到我的小说世界</p>
-</div>
+                const el = document.createElement('div');
+                el.className = 'snowflake';
+                el.textContent = '❄';
 
-<!-- 内容区 -->
-<div class="content" id="content">
-    <div class="card">
-        <h2>《梦雪》</h2>
-        <p>一段关于雪、梦境与命运的故事。</p>
-        <a href="novels/novel1/index.html">开始阅读 →</a>
-    </div>
+                // 随机位置、大小、速度与漂移
+                const left = Math.random() * window.innerWidth;
+                const size = 10 + Math.random() * 22;
+                const duration = 5 + Math.random() * 7; // seconds
+                const drift = (Math.random() - 0.5) * 120; // px
 
-    <div class="card">
-        <h2>作者介绍</h2>
-        <p>这里可以写你的作者简介，例如你的创作理念、你的世界观、你为什么写这本小说。</p>
-        <a href="author.html">查看完整作者页面 →</a>
-    </div>
-</div>
+                el.style.left = left + 'px';
+                el.style.fontSize = size + 'px';
+                el.style.animationDuration = duration + 's';
+                el.style.setProperty('--drift', drift + 'px');
 
-<!-- 滚动动画 -->
-<script>
-    window.addEventListener('scroll', () => {
-        const hero = document.getElementById('hero');
-        const content = document.getElementById('content');
+                document.body.appendChild(el);
 
-        if (window.scrollY > 100) {
-            hero.classList.add('shrink');
-            content.classList.add('show');
-        } else {
-            hero.classList.remove('shrink');
-            content.classList.remove('show');
-        }
-    });
-</script>
+                // 在动画结束时移除元素并更新计数
+                function cleanup() {
+                    el.removeEventListener('animationend', cleanup);
+                    if (el.parentNode) el.parentNode.removeChild(el);
+                    active = Math.max(0, active - 1);
+                }
+                el.addEventListener('animationend', cleanup);
 
+                // 保险回收（防止 animationend 未触发）
+                setTimeout(() => {
+                    if (el.parentNode) {
+                        el.parentNode.removeChild(el);
+                        active = Math.max(0, active - 1);
+                    }
+                }, lifetime + 2000);
+            }
+
+            // 初始生成一些雪花，然后以间隔生成
+            for (let i = 0; i < 6; i++) {
+                setTimeout(createSnowflake, i * 300);
+            }
+            setInterval(createSnowflake, 400);
+        })();
+    </script>
+
+    <!-- 滚动与显示逻辑 -->
+    <script>
+        (function () {
+            const hero = document.getElementById('hero');
+            const content = document.getElementById('content');
+            let ticking = false;
+
+            function onScroll() {
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        if (window.scrollY > 100) {
+                            hero.classList.add('shrink');
+                            content.classList.add('show');
+                        } else {
+                            hero.classList.remove('shrink');
+                            content.classList.remove('show');
+                        }
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+
+            // 如果页面加载时已滚动，立即应用状态
+            document.addEventListener('DOMContentLoaded', () => {
+                if (window.scrollY > 100) {
+                    hero.classList.add('shrink');
+                    content.classList.add('show');
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

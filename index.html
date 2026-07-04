@@ -22,7 +22,6 @@
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
   }
 
   /* 背景：木屋 · 湖面 · 森林 · 冬季 · 夜景 · 暖灯光 */
@@ -116,17 +115,7 @@
     margin: 0 auto;
     padding: 40px 20px;
     box-sizing: border-box;
-  }
-
-  .content {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all .6s ease;
-  }
-
-  .content.show {
-    opacity: 1;
-    transform: translateY(0);
+    min-height: 120vh; /* 关键：确保页面有内容可以滚动 */
   }
 
   .card {
@@ -196,7 +185,7 @@
 
 <div id="hero-placeholder"></div>
 
-<main class="content" id="content">
+<main>
 
   <section class="card">
     <h2>《梦雪》</h2>
@@ -232,7 +221,6 @@
 (function(){
   const hero = document.getElementById('hero');
   const placeholder = document.getElementById('hero-placeholder');
-  const content = document.getElementById('content');
   const hint = document.getElementById('scrollHint');
 
   setTimeout(()=> hint.classList.add('show'), 600);
@@ -244,12 +232,10 @@
         placeholder.style.height = h + 'px';
         hero.classList.add('shrink');
       }
-      content.classList.add('show');
       hint.classList.remove('show');
     } else {
       hero.classList.remove('shrink');
       placeholder.style.height = '0';
-      content.classList.remove('show');
       hint.classList.add('show');
     }
   }

@@ -1,300 +1,182 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>书雪书阁 | Elowen’s Book Pavilion</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>书雪书阁 | Elowen’s Book Pavilion</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --glass: rgba(255,255,255,0.10);
+    --glass-strong: rgba(255,255,255,0.14);
+    --accent: #ffd9a6;
+    --text: #fff;
+  }
+  html,body{height:100%;margin:0;font-family:"Noto Serif SC",serif;background:#081018;color:var(--text);-webkit-font-smoothing:antialiased}
+  /* 背景：深夜窗外雪景 + 暖灯反光（图片 + 深色叠加 +暖色渐变反光） */
+  body{
+    background:
+      linear-gradient(180deg, rgba(2,6,12,0.72) 0%, rgba(2,6,12,0.72) 60%),
+      radial-gradient(800px 400px at 85% 20%, rgba(255,180,100,0.06), transparent 20%),
+      url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1600&q=80') center/cover fixed;
+    overflow-x:hidden;
+  }
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  /* 顶部 hero */
+  .hero{
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:24px;
+    box-sizing:border-box;
+    transition:all .5s ease;
+    position:relative;
+  }
+  .hero h1{font-family:"Playfair Display",serif;font-size:56px;margin:0 0 8px;letter-spacing:2px;text-shadow:0 8px 24px rgba(0,0,0,0.6)}
+  .hero p{margin:0;font-size:18px;opacity:.95}
 
-    <style>
-        :root {
-            --glass-bg: rgba(255,255,255,0.12);
-            --glass-blur: 8px;
-            --text-color: #fff;
-        }
+  /* 微妙的下滑提示（不显眼） */
+  .scroll-hint{
+    position:absolute;
+    bottom:28px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    opacity:.85;
+    transform:translateY(0);
+    transition:opacity .4s ease, transform .4s ease;
+    pointer-events:none;
+  }
+  .scroll-hint .arrow{
+    width:22px;height:22px;border-left:2px solid rgba(255,255,255,0.9);border-bottom:2px solid rgba(255,255,255,0.9);
+    transform:rotate(-45deg);
+    animation: bounce 1.6s infinite;
+    opacity:.9;
+  }
+  .scroll-hint .text{font-size:13px;color:rgba(255,255,255,0.85);letter-spacing:0.6px}
 
-        html, body {
-            height: 100%;
-        }
+  @keyframes bounce{
+    0%{transform:translateY(0) rotate(-45deg)}
+    50%{transform:translateY(8px) rotate(-45deg)}
+    100%{transform:translateY(0) rotate(-45deg)}
+  }
 
-        body {
-            margin: 0;
-            font-family: "Noto Serif SC", serif;
-            /* 更暗的背景：图片 + 深色渐变叠加，保证雪花与文字对比 */
-            background:
-                linear-gradient(rgba(2,8,20,0.65), rgba(2,8,20,0.65)),
-                url('https://images.unsplash.com/photo-1482192596544-9eb780fc7f66?auto=format&fit=crop&w=1600&q=80') no-repeat center center fixed;
-            background-size: cover;
-            color: var(--text-color);
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+  /* 收缩后固定导航 */
+  .hero.shrink{
+    height:72px;
+    position:fixed;
+    top:0;left:0;right:0;
+    background:linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.35));
+    backdrop-filter: blur(6px);
+    z-index:999;
+    padding:10px 20px;
+  }
+  .hero.shrink h1{font-size:22px}
 
-        /* 顶部标题区（初始大，滚动后缩小） */
-        .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            transition: all 0.6s ease;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+  /* 内容区 */
+  main{max-width:980px;margin:0 auto;padding:40px 20px;box-sizing:border-box}
+  .content{opacity:0;transform:translateY(30px);transition:all .8s ease}
+  .content.show{opacity:1;transform:translateY(0)}
 
-        .hero h1 {
-            font-family: "Playfair Display", serif;
-            font-size: 60px;
-            margin: 0;
-            letter-spacing: 3px;
-            text-shadow: 0 6px 18px rgba(0,0,0,0.45);
-            transition: font-size 0.6s ease;
-        }
+  .card{
+    background:var(--glass);
+    border-radius:12px;padding:22px;margin-bottom:20px;backdrop-filter:blur(6px);
+    transition:transform .25s, box-shadow .25s;
+  }
+  .card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(0,0,0,0.45)}
+  .card h2{margin:0 0 8px;font-size:24px}
+  .card p{margin:0 0 12px;color:rgba(255,255,255,0.92)}
+  .card a{color:var(--accent);font-weight:600;text-decoration:none}
+  .card a:hover{text-decoration:underline}
 
-        .hero p {
-            font-size: 22px;
-            margin-top: 10px;
-            opacity: 0.95;
-            transition: opacity 0.6s ease;
-        }
+  /* 小屏 */
+  @media (max-width:600px){
+    .hero h1{font-size:34px}
+    .hero p{font-size:15px}
+    .card h2{font-size:20px}
+  }
 
-        /* 滚动后缩小成导航栏 */
-        .hero.shrink {
-            height: 80px;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(6px);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 999;
-            padding: 10px 20px;
-        }
+  /* 跳过链接（无障碍） */
+  .skip{position:absolute;left:-999px}
+  .skip:focus{left:10px;top:10px;background:#000;padding:8px;border-radius:4px;color:#fff;z-index:10000}
 
-        .hero.shrink h1 {
-            font-size: 26px;
-        }
-
-        .hero.shrink p {
-            opacity: 0;
-            height: 0;
-            overflow: hidden;
-        }
-
-        /* 内容区 */
-        .content {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 1s ease;
-            box-sizing: border-box;
-        }
-
-        .content.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .card {
-            background: var(--glass-bg);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-            backdrop-filter: blur(var(--glass-blur));
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.35);
-        }
-
-        .card h2 {
-            margin-top: 0;
-            font-size: 28px;
-        }
-
-        a {
-            color: #cce0ff;
-            font-weight: bold;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        /* 雪花效果（更自然且性能友好） */
-        .snowflake {
-            position: fixed;
-            top: -10px;
-            color: #f7fbff;
-            opacity: 0.9;
-            pointer-events: none;
-            will-change: transform, opacity;
-            animation-name: fall;
-            animation-timing-function: linear;
-            animation-iteration-count: 1;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
-        }
-
-        @keyframes fall {
-            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0.95; }
-            70% { opacity: 0.95; }
-            100% { transform: translateY(110vh) translateX(var(--drift, 40px)) rotate(360deg); opacity: 0.9; }
-        }
-
-        /* 小屏幕优化 */
-        @media (max-width: 600px) {
-            .hero h1 { font-size: 36px; letter-spacing: 1px; }
-            .hero p { font-size: 16px; }
-            .card h2 { font-size: 22px; }
-        }
-
-        /* 无障碍跳过链接 */
-        .skip-link {
-            position: absolute;
-            left: -999px;
-            top: auto;
-            width: 1px;
-            height: 1px;
-            overflow: hidden;
-        }
-        .skip-link:focus {
-            left: 10px;
-            top: 10px;
-            width: auto;
-            height: auto;
-            background: #000;
-            color: #fff;
-            padding: 8px 12px;
-            z-index: 9999;
-            border-radius: 4px;
-            text-decoration: none;
-        }
-    </style>
+</style>
 </head>
-
 <body>
-    <a class="skip-link" href="#content">跳过到内容</a>
+  <a class="skip" href="#main">跳过到内容</a>
 
-    <!-- 顶部标题区 -->
-    <header class="hero" id="hero" role="banner" aria-label="网站顶部">
-        <h1>书雪书阁 · Elowen’s Book Pavilion</h1>
-        <p>欢迎来到我的小说世界</p>
-    </header>
+  <header class="hero" id="hero" role="banner" aria-label="网站顶部">
+    <h1>书雪书阁 · Elowen’s Book Pavilion</h1>
+    <p>窗外雪落，灯下故事正在等你</p>
 
-    <!-- 内容区 -->
-    <main id="content" class="content" role="main" aria-labelledby="main-title">
-        <div class="card" aria-labelledby="novel-title">
-            <h2 id="novel-title">《梦雪》</h2>
-            <p>一段关于雪、梦境与命运的故事。</p>
-            <a href="novels/novel1/index.html" aria-label="开始阅读《梦雪》">开始阅读 →</a>
-        </div>
+    <!-- 微妙下滑提示（不抢眼） -->
+    <div class="scroll-hint" id="scrollHint" aria-hidden="true">
+      <div class="arrow" aria-hidden="true"></div>
+      <div class="text">轻轻向下</div>
+    </div>
+  </header>
 
-        <div class="card" aria-labelledby="author-title">
-            <h2 id="author-title">作者介绍</h2>
-            <p>这里可以写你的作者简介，例如你的创作理念、你的世界观、你为什么写这本小说。</p>
-            <a href="author.html" aria-label="查看作者页面">查看完整作者页面 →</a>
-        </div>
-    </main>
+  <main id="main" class="content" role="main" aria-labelledby="main-title">
+    <!-- 梦雪卡片（点击在新标签页打开） -->
+    <section class="card" aria-labelledby="novel-title">
+      <h2 id="novel-title">《梦雪》</h2>
+      <p>一段关于雪、梦境与命运的短篇连载。点击进入阅读完整章节。</p>
+      <a href="novels/novel1/index.html" target="_blank" rel="noopener noreferrer">开始阅读 →（新标签页打开）</a>
+    </section>
 
-    <!-- 雪花生成脚本 -->
-    <script>
-        (function () {
-            const maxSnowflakes = 14; // 降低密度，提升性能
-            const lifetime = 10000; // ms
-            let active = 0;
+    <!-- 作者卡片 -->
+    <section class="card" aria-labelledby="author-title">
+      <h2 id="author-title">作者 · Elowen</h2>
+      <p>了解作者、创作理念与留言互动。你可以在作者页给作者留言，作者可以回复读者。</p>
+      <a href="author.html">查看作者页面 →</a>
+    </section>
+  </main>
 
-            function createSnowflake() {
-                if (active >= maxSnowflakes) return;
-                active++;
+<script>
+  // 页面交互：hero 收缩、内容显示、下滑提示自动淡出
+  (function(){
+    const hero = document.getElementById('hero');
+    const content = document.querySelector('.content');
+    const hint = document.getElementById('scrollHint');
 
-                const el = document.createElement('div');
-                el.className = 'snowflake';
-                el.textContent = '❄';
+    function update(){
+      if(window.scrollY > 100){
+        hero.classList.add('shrink');
+        content.classList.add('show');
+        // 当固定头部时，避免遮挡内容：给 body 添加 padding-top
+        document.body.style.paddingTop = hero.getBoundingClientRect().height + 'px';
+        // 隐藏下滑提示
+        hint.style.opacity = '0';
+        hint.style.transform = 'translateY(6px)';
+      } else {
+        hero.classList.remove('shrink');
+        content.classList.remove('show');
+        document.body.style.paddingTop = '';
+        hint.style.opacity = '0.9';
+        hint.style.transform = 'translateY(0)';
+      }
+    }
 
-                const left = Math.random() * window.innerWidth;
-                const size = 10 + Math.random() * 22;
-                const duration = 5 + Math.random() * 7; // seconds
-                const drift = (Math.random() - 0.5) * 140; // px
+    // 初始延迟显示下滑提示（更自然）
+    setTimeout(()=>{ hint.style.opacity = '0.9' }, 700);
 
-                el.style.left = left + 'px';
-                el.style.fontSize = size + 'px';
-                el.style.animationDuration = duration + 's';
-                el.style.setProperty('--drift', drift + 'px');
+    // 优化滚动回调
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if(!ticking){
+        window.requestAnimationFrame(()=>{ update(); ticking=false; });
+        ticking = true;
+      }
+    }, {passive:true});
 
-                document.body.appendChild(el);
-
-                function cleanup() {
-                    el.removeEventListener('animationend', cleanup);
-                    if (el.parentNode) el.parentNode.removeChild(el);
-                    active = Math.max(0, active - 1);
-                }
-                el.addEventListener('animationend', cleanup);
-
-                // 保险回收
-                setTimeout(() => {
-                    if (el.parentNode) {
-                        el.parentNode.removeChild(el);
-                        active = Math.max(0, active - 1);
-                    }
-                }, lifetime + 2000);
-            }
-
-            // 初始生成一些雪花，然后以间隔生成
-            for (let i = 0; i < 6; i++) {
-                setTimeout(createSnowflake, i * 300);
-            }
-            setInterval(createSnowflake, 600);
-        })();
-    </script>
-
-    <!-- 滚动与显示逻辑（修复遮挡问题：当 hero 固定时给 body 添加等高 padding） -->
-    <script>
-        (function () {
-            const hero = document.getElementById('hero');
-            const content = document.getElementById('content');
-
-            function applyLayout() {
-                if (window.scrollY > 100) {
-                    if (!hero.classList.contains('shrink')) {
-                        hero.classList.add('shrink');
-                    }
-                    content.classList.add('show');
-
-                    // 给 body 添加上内边距，避免固定的 hero 遮挡内容
-                    const h = hero.getBoundingClientRect().height;
-                    document.body.style.paddingTop = h + 'px';
-                } else {
-                    hero.classList.remove('shrink');
-                    content.classList.remove('show');
-                    document.body.style.paddingTop = '';
-                }
-            }
-
-            // 使用 requestAnimationFrame 优化滚动回调
-            let ticking = false;
-            window.addEventListener('scroll', () => {
-                if (!ticking) {
-                    window.requestAnimationFrame(() => {
-                        applyLayout();
-                        ticking = false;
-                    });
-                    ticking = true;
-                }
-            }, { passive: true });
-
-            // 初始检查（页面刷新时如果已滚动）
-            document.addEventListener('DOMContentLoaded', applyLayout);
-            window.addEventListener('resize', applyLayout);
-        })();
-    </script>
+    // 初始检查
+    document.addEventListener('DOMContentLoaded', update);
+    window.addEventListener('resize', update);
+  })();
+</script>
 </body>
 </html>

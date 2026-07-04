@@ -24,7 +24,6 @@
     overflow-y: auto;
   }
 
-  /* 背景：木屋 · 湖面 · 森林 · 冬季 · 夜景 · 暖灯光 */
   body {
     background:
       linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
@@ -32,7 +31,6 @@
       center/cover fixed;
   }
 
-  /* 顶部区域 */
   .hero {
     height: 100vh;
     display: flex;
@@ -60,7 +58,6 @@
     opacity: .95;
   }
 
-  /* 下滑提示 */
   .scroll-hint {
     position: absolute;
     bottom: 28px;
@@ -88,7 +85,6 @@
     100% { transform: translateY(0) rotate(-45deg); }
   }
 
-  /* 固定导航栏 */
   .hero.shrink {
     height: 72px;
     position: fixed;
@@ -103,19 +99,17 @@
     font-size: 22px;
   }
 
-  /* 占位元素 */
   #hero-placeholder {
     height: 0;
     transition: height .45s ease;
   }
 
-  /* 内容区 */
   main {
     max-width: 980px;
     margin: 0 auto;
     padding: 40px 20px;
     box-sizing: border-box;
-    min-height: 120vh; /* 关键：确保页面有内容可以滚动 */
+    min-height: 120vh;
   }
 
   .card {
@@ -152,7 +146,6 @@
     text-decoration: underline;
   }
 
-  /* 雪花 */
   .snowflake {
     position: fixed;
     top: -10px;
@@ -202,7 +195,6 @@
 </main>
 
 <script>
-/* 雪花 */
 (function(){
   function createSnow(){
     const el = document.createElement('div');
@@ -217,7 +209,6 @@
   setInterval(createSnow, 150);
 })();
 
-/* 滚动逻辑 */
 (function(){
   const hero = document.getElementById('hero');
   const placeholder = document.getElementById('hero-placeholder');
@@ -228,7 +219,7 @@
   function apply(){
     if(window.scrollY > 100){
       if(!hero.classList.contains('shrink')){
-        const h = hero.getBoundingClientRect().height;
+        const h = hero.getBoundingoundingClientRect().height;
         placeholder.style.height = h + 'px';
         hero.classList.add('shrink');
       }
